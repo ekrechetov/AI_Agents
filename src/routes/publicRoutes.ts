@@ -1,5 +1,6 @@
 import StartView from '@/views/StartView.vue'
-// import AiChatView from '@/views/AiChatView.vue'
+import FriendlyChatView from '@/views/friendlyChat/FriendlyChatView.vue'
+import PdfExtractorView from '@/views/pdfExtractor/PdfExtractorView.vue'
 import type { RouteRecordRaw } from 'vue-router'
 
 export const publicRoutes: RouteRecordRaw[] = [
@@ -7,18 +8,18 @@ export const publicRoutes: RouteRecordRaw[] = [
     path: '/',
     name: 'startView',
     component: StartView,
-    meta: {
-      title: 'AI Agents - Start'
-    }
+    // meta: {
+    //   title: 'AI Agents - Start'
+    // }
   },
-  //   {
-  //   path: '/ai-chat',
-  //   name: 'aiChatPage',
-  //   component: ChatView
-  // },
-  // {
-  //   path: '/ai-pdf',
-  //   name: 'aiPdfPage',
-  //   component: AiPdfPage
-  // }
+    {
+    path: '/friendly-ai-chat',
+    name: 'friendlyAiChatView',
+    component: FriendlyChatView
+  },
+  {
+    path: '/pdf-extractor',
+    name: 'PdfExtractorView',
+    component: PdfExtractorView
+  }
 ]

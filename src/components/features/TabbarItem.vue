@@ -1,34 +1,36 @@
 <script setup lang="ts">
-import { RouterLink, useRouter } from 'vue-router'
-import { useTabbarStore } from '@/stores/tabbarStore'
-import type { TabbarItemType } from '@/types'
+import { computed } from 'vue'
+import { RouterLink } from 'vue-router'
+import { useConversationStore } from '@/stores/conversationStore'
+import type { Conversation } from '@/types'
 
-const tabbarStore = useTabbarStore()
-const router = useRouter()
+const conversationStore = useConversationStore()
 
 interface Props {
-  tab: TabbarItemType;
+  conversation: Conversation;
 }
 
-const { tab } = defineProps<Props>()
+const { conversation } = defineProps<Props>()
+
+const currentConversationId = computed(() => conversationStore.currentConversationId)
+const selectConversation = computed(() => conversationStore.selectConversation)
+const isActive = computed(() => currentConversationId.value === conversation.id)
 
 const closeTab = (event: MouseEvent): void => {
   event.preventDefault()
   event.stopPropagation()
-  tabbarStore.removeTab(tab)
-  router.go(-1) /* go back by one record, the same as router.back() */
+  conversationStore.deleteConversation(conversation.id)
 }
-
 </script>
 
 <template>
   <RouterLink
-    :to="tab.path"
-    v-slot="{isActive}"
-    :title="tab.label"
+    :to="conversation.agentPath"  
+    :title="conversation.agentName"
+    @click="selectConversation(conversation.id)"
   >
     <div :class="['tab', isActive && 'tab-active']">
-      <span class="tab-label">{{ tab.label }}</span>
+      <span class="tab-label">{{ conversation.agentName }}</span>
       <span v-if="isActive" class="pi pi-times tab-close-icon" @click="closeTab"></span>
     </div>
   </RouterLink>
@@ -42,12 +44,14 @@ a {
 .tab {
   display: flex;
   align-items: center;
-  background: rgb(214, 212, 212);
+  background: rgb(233, 231, 231);
   transition: 0.3s;
   margin-right: calc($spacer / 2);
-  padding: calc($spacer / 2) $spacer;
+  padding: calc($spacer / 3) $spacer;
   border-radius: 5px 12px 0 0;
-  color: $primary-text-color;
+  border: 1px solid $secondary-color-light;
+  border-bottom: none;
+  color: $secondary-text-color;
   white-space: nowrap;
 
   &-label {
@@ -71,12 +75,18 @@ a {
 
   &-close-icon:hover {
     color: rgba(0, 0, 0, 1);
-    background: rgb(162, 135, 243);
+    background: $secondary-color-light;
   }
 }
 
+.tab:not(.tab-active):hover {
+  background: $secondary-color-light;
+}
+
 .tab-active  {
-  background: rgb(180, 163, 231);
+  background: #fff;
   color: black;
+  font-weight: 500;
+  cursor: default;
 }
 </style>

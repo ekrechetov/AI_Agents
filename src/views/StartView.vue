@@ -12,15 +12,12 @@
 
 <style scoped lang="scss">
 .start-view {
-  height: calc(100vh - 102px);
-  margin-left: 70px;//todo: var(--sidebar-width) when it will be implemented
-  margin-right: 0;
+  height: calc(100vh - 102px); // todo: make dynamic based on header and tabbar height
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   color: #9ca3af;
-  background-color: rgb(243, 243, 229);
   text-align: center;
 
   &-icon {

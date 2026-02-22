@@ -3,26 +3,33 @@
  */
 
 export interface Message {
-  id: string
-  role: 'user' | 'assistant'
-  content: string
-  timestamp: Date
+  id?: string
+  role: 'user' | 'model'
+  parts: { text: string }[]
+  timestamp?: Date
 }
 
 export interface Agent {
   id: string
   name: string
   description: string
-  avatar?: string
+  path: string
+  icon?: string
+}
+
+export interface ChatMessage {
+  role: 'user' | 'model'
+  parts: { text: string }[]
 }
 
 export interface Conversation {
   id: string
   agentId: string
-  title: string
+  agentName: string
+  agentPath: string
   messages: Message[]
   createdAt: Date
-  updatedAt: Date
+  updatedAt: Date,
 }
 
 export interface UIState {
@@ -32,11 +39,4 @@ export interface UIState {
 export interface ChatState {
   conversations: Conversation[]
   currentConversationId: string | null
-}
-
-
-
-export interface TabbarItemType {
-	path: string;
-	label: string;
 }

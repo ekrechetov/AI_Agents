@@ -1,23 +1,24 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import TabbarItem from '@/components/features/TabbarItem.vue'
-import { useTabbarStore } from '@/stores/tabbarStore'
+import { useConversationStore } from '@/stores/conversationStore'
 
-const tabbarStore = useTabbarStore()
-
+const conversations = computed(() => useConversationStore().conversations)
 </script>
 
 <template>
   <ul class="tab-container">
-    <li v-for="tab in tabbarStore.tabs" :key="tab.label">
-      <TabbarItem :tab="tab" />
+    <li v-for="conversation in conversations" :key="conversation.id">
+      <TabbarItem :conversation="conversation" />
     </li>
   </ul>
 </template>
 
 <style scoped lang="scss">
 .tab-container {
-	display: flex;
-	background: rgb(247, 245, 245);
-	padding: 12px 12px 0 12px;
+  display: flex;
+  align-items: end;
+  min-height: 44px;
+  padding: 12px 12px 0 12px;
 }
 </style>
