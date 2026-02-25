@@ -2,7 +2,7 @@ import { GoogleGenAI } from '@google/genai'
 import { InvoiceSchema } from '@/views/pdfExtractor/zodInvoiceSheme'
 
 export const parseInvoice = async (pdfBase64: string) => {
-  const ai = new GoogleGenAI({ apiKey: 'AIzaSyDE4crskSFnxVepunQFEu7KAqlKmKF2OYw' })
+  const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GOOGLE_GENAI_KEY })
 
   const prompt = `
     Ти — система для аналізу фінансових документів.

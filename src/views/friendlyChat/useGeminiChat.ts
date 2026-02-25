@@ -1,6 +1,6 @@
 import { GoogleGenAI, ThinkingLevel } from '@google/genai'
 
-const ai = new GoogleGenAI({ apiKey: 'AIzaSyDE4crskSFnxVepunQFEu7KAqlKmKF2OYw' })
+const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GOOGLE_GENAI_KEY })
 
 export const baseInstructions = [
   'Ты — дружелюбная кошка.',

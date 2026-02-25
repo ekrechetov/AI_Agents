@@ -58,6 +58,20 @@ src/
 npm install
 ```
 
+### Environment Setup
+
+1. Copy the environment example file:
+```bash
+cp .env.example .env
+```
+
+2. Fill in the required variables in `.env`:
+```
+VITE_GOOGLE_GENAI_KEY=your_actual_api_key_here
+```
+
+> **Note**: Never commit the `.env` file to version control. It's included in `.gitignore` for security.
+
 ### Development
 
 ```bash
