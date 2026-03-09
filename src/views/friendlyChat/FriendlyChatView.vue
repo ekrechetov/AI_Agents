@@ -1,22 +1,21 @@
 <script setup lang="ts">
 import { onMounted, ref, nextTick, computed } from 'vue'
-import { createChat } from './useGeminiChat'
-import { useConversationStore } from '../../stores/conversationStore'
+import { aiChatService } from '@/services/aiChat.service.js'
+import { useConversationStore } from '@/stores/conversationStore'
+import { useMessagesStore } from '@/stores/messagesStore'
 
 const conversationStore = useConversationStore()
+const messageStore = useMessagesStore()
 
 const conversations = computed(() => conversationStore.conversations)
 const createConversation = computed(() => conversationStore.createConversation)
 const agents = computed(() => conversationStore.agents)
-const currentConversation = computed(() => conversationStore.currentConversation)
+const messages = computed(() => messageStore.messages)
 
 const isBotTyping = ref<boolean>(false)
 const inputMessage = ref<string>('')
-const botMessage = ref<string>('')
 
-const chat = createChat()
-
-onMounted(() => {
+onMounted(async() => {
   if (conversations.value.some(item => item.agentName === 'AI Chat')) {
     // If exist 'AI Chat' conversation, we can download messages
     const existingConversation = conversations.value.find(item => item.agentName === 'AI Chat')
@@ -35,38 +34,35 @@ const scrollToBottom = (): void => {
   }
 }
 
-const sendMessage = async (): Promise<void> => {
-  if (!inputMessage.value.trim()) return
-  currentConversation.value?.messages.push({ role: 'user', parts: [ { text: inputMessage.value } ] })
+const handleSend = async (): Promise<void> => {
+  if (!inputMessage.value.trim() || isBotTyping.value) return
+
+  messageStore.addMessage({ role: 'user', parts: [{ text: inputMessage.value }] })
   isBotTyping.value = true
   await nextTick()
   scrollToBottom()
+
   try {
-    const stream = await chat.sendMessageStream({
-      message: inputMessage.value
-    })
-
-    inputMessage.value = ''
-    botMessage.value = ''
-    currentConversation.value?.messages.push({ role: 'model', parts: [ { text: botMessage.value } ] })
-
-    for await (const chunk of stream) {
-      if (chunk?.text) {
-        botMessage.value += chunk.text
-        const lastMessage = currentConversation.value?.messages[currentConversation.value.messages.length - 1]
-        if (lastMessage?.role === 'model' && lastMessage.parts?.[0]) {
-          lastMessage.parts[0].text = botMessage.value
-          scrollToBottom()
+    const historyForBackend = messageStore.messages.slice(0, -1) || []
+    // История передается БЕЗ последнего сообщения
+    await aiChatService.sendMessage(
+      inputMessage.value, 
+      historyForBackend,
+      (chunk) => {
+        const lastMessage = messageStore.messages?.[messageStore.messages.length - 1]
+        if (lastMessage?.parts?.[0]) {
+          lastMessage.parts[0].text += chunk
         }
       }
+    )
+  } catch (error) {
+    console.error('Streaming error:', error)
+    const lastMessage = messageStore.messages?.[messageStore.messages.length - 1]
+    if (lastMessage?.parts?.[0]) {
+      lastMessage.parts[0].text = error as string || 'Internal server error (500)'
     }
-  } catch (error: unknown) {
-    console.error('Error fetching AI response:', error)
-    const errorMessage = error instanceof Error 
-      ? error.message 
-      : 'Произошла ошибка при получении ответа от AI.'
-    currentConversation.value?.messages.push({ role: 'model', parts: [ { text: errorMessage } ] })
   } finally {
+    inputMessage.value = ''
     isBotTyping.value = false
     await nextTick()
     scrollToBottom()
@@ -82,7 +78,7 @@ const sendMessage = async (): Promise<void> => {
         tag="ul"
       >
         <div
-          v-for="(message, index) in currentConversation?.messages || []"
+          v-for="(message, index) in messages || []"
           :key="index"
           :class="['message', message.role === 'model' ? 'message-bot' : 'message-user']"
         >
@@ -109,7 +105,10 @@ const sendMessage = async (): Promise<void> => {
         class="message-input"
         placeholder="Спроси что-нибудь..."
       />
-      <button class="send-button" @click="() => sendMessage()">Отправить</button>
+      <button
+        class="send-button"
+        :disabled="isBotTyping || !inputMessage"
+        @click="() => handleSend()">Отправить</button>
     </div>
   </div>
 </template>

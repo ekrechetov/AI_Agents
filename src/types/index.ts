@@ -1,13 +1,4 @@
-/**
- * AI Agent Types and Interfaces
- */
-
-export interface Message {
-  id?: string
-  role: 'user' | 'model'
-  parts: { text: string }[]
-  timestamp?: Date
-}
+import type { ChatMessage } from "@/shared-types"
 
 export interface Agent {
   id: string
@@ -17,17 +8,12 @@ export interface Agent {
   icon?: string
 }
 
-export interface ChatMessage {
-  role: 'user' | 'model'
-  parts: { text: string }[]
-}
-
 export interface Conversation {
   id: string
   agentId: string
   agentName: string
   agentPath: string
-  messages: Message[]
+  messages: ChatMessage[]
   createdAt: Date
   updatedAt: Date,
 }

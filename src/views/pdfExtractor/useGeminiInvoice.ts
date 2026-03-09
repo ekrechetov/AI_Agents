@@ -3,11 +3,12 @@ import { InvoiceSchema } from '@/views/pdfExtractor/zodInvoiceSheme'
 
 export const parseInvoice = async (pdfBase64: string) => {
 
-  const apiKey = import.meta.env.VITE_GOOGLE_GENAI_KEY
+  const apiKey = import.meta.env.VITE_GEMINI_KEY
+  // const apiKey = import.meta.env.DEV ? import.meta.env.VITE_GEMINI_KEY : null
 
   if (!apiKey) {
     throw new Error(
-      'VITE_GOOGLE_GENAI_KEY is not set. Please check your .env file or server environment variables.'
+      'VITE_GEMINI_KEY is not set. Please check your .env file or server environment variables.'
     )
   }
 
