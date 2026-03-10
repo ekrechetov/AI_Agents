@@ -11,7 +11,7 @@ export const aiChatService = {
   ) {
     const messageStore = useMessagesStore()
 
-    const response = await fetch(`${apiBaseURL}/api/chat`, {
+    const response = await fetch(`${apiBaseURL}/api/ai-chat/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message, history })

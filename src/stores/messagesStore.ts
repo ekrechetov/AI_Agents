@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import type { ChatMessage } from '@shared/index.js'
+
 export const useMessagesStore = defineStore('messagesStore', () => {
 
 	const messages = ref<ChatMessage[]>([

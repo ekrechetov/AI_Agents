@@ -1,5 +1,3 @@
-import type { ChatMessage } from "@/shared-types"
-
 export interface Agent {
   id: string
   name: string
@@ -13,7 +11,6 @@ export interface Conversation {
   agentId: string
   agentName: string
   agentPath: string
-  messages: ChatMessage[]
   createdAt: Date
   updatedAt: Date,
 }

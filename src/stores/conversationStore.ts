@@ -5,8 +5,6 @@ import type { Agent, Conversation } from '@/types'
 
 export const useConversationStore = defineStore('conversationStore', () => {
 
-  const userFirstName = 'Yevhenii' // --- HARDCODED FOR DEMO PURPOSES ---
-
   const router = useRouter()
 
   const conversations = ref<Conversation[]>([])
@@ -44,15 +42,6 @@ export const useConversationStore = defineStore('conversationStore', () => {
       agentId: agent.id,
       agentName: agent.name,
       agentPath: agent.path,
-      messages: [
-        { role: 'model',
-          parts: [
-            {
-              text: `Привет, ${userFirstName || 'друг'}. О чём бы ты хотел поговорить?`
-            }
-          ]
-        }
-      ],
       createdAt: new Date(),
       updatedAt: new Date()
     }
