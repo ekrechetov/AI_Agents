@@ -24,7 +24,9 @@ const handleToggleSidebar = () => {
 
 <template>
   <div class="layout">
-    <Header @toggle-sidebar="handleToggleSidebar"/>
+    <div class="layout-header">
+      <Header @toggle-sidebar="handleToggleSidebar"/>
+    </div>
 
     <aside ref="sidebarRef">
       <Sidebar />
@@ -44,14 +46,22 @@ const handleToggleSidebar = () => {
 .layout {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
   background-color: #f9fafb;
+  height: 100dvh; // Dynamic height for mobile
+  overflow: hidden;
+
+  &-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--header-height);
+    z-index: 200;
+  }
 
   .main {
-    margin-top: 56px;//todo: var(--sidebar-width) when it will be implemented
-    margin-left: 70px;//todo: var(--sidebar-width) when it will be implemented
-    height: calc(100vh - 56px);
-    
+    margin-top: var(--header-height);
+    height: calc(100dvh - var(--header-height));
     display: flex;
     flex-direction: column;
     padding: 0 4px;
@@ -59,9 +69,10 @@ const handleToggleSidebar = () => {
     overflow: hidden;
 
     .page-content {
-      flex: 1;
       display: flex;
       justify-content: center;
+      height: 100%;
+      width: 100%;
       border-top-left-radius: 14px;
       border-top-right-radius: 14px;
       background-color: #fff;
@@ -71,19 +82,11 @@ const handleToggleSidebar = () => {
   }
 }
 
-/* @media (min-width: 1024px) {
+@media screen and (min-width: 480px) {
   .layout {
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    grid-template-rows: 3.5rem 1fr;
+		main {
+      margin-left: var(--sidebar-width);
+    }
   }
-
-  :deep(header) {
-    grid-column: 1 / -1;
-  }
-
-  .main-content {
-    flex-direction: column;
-  }
-} */
+}
 </style>

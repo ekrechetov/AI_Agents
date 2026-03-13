@@ -3,6 +3,7 @@ import { onMounted, ref, nextTick, computed } from 'vue'
 import { aiChatService } from '@/services/aiChat.service.js'
 import { useConversationStore } from '@/stores/conversationStore'
 import { useMessagesStore } from '@/stores/messagesStore'
+import Button from 'primevue/button'
 
 const conversationStore = useConversationStore()
 const messageStore = useMessagesStore()
@@ -28,7 +29,7 @@ onMounted(async() => {
 })
 
 const scrollToBottom = (): void => {
-  const container = document.querySelector('.messages-container')
+  const container = document.querySelector('.ai-chat-page-wrap')
   if (container) {
     container.scrollTop = container.scrollHeight
   }
@@ -72,43 +73,52 @@ const handleSend = async (): Promise<void> => {
 
 <template>
   <div class="ai-chat-page">
-    <div class="messages-container">
-      <TransitionGroup
-        name="add-fade"
-        tag="ul"
-      >
-        <div
-          v-for="(message, index) in messages || []"
-          :key="index"
-          :class="['message', message.role === 'model' ? 'message-bot' : 'message-user']"
+    <div class="ai-chat-page-wrap">
+      <div class="messages-container">
+        <TransitionGroup
+          name="add-fade"
+          tag="ul"
         >
-          <p class="message-content">{{ message?.parts?.[0]?.text }}</p>
-        </div>
-        <div v-if="isBotTyping" class="bot-typing message-content">
-          <div style="margin-right: 4px;">ИИ пишет:</div>
-          <div class="dots">
-            <span></span>
-            <span></span>
-            <span></span>
+          <div
+            v-for="(message, index) in messages || []"
+            :key="index"
+            :class="['message', message.role === 'model' ? 'message-bot' : 'message-user']"
+          >
+            <p class="message-content">{{ message?.parts?.[0]?.text }}</p>
           </div>
-        </div>
-      </TransitionGroup>
+          <div v-if="isBotTyping" class="bot-typing message-content">
+            <div style="margin-right: 4px;">ИИ пишет:</div>
+            <div class="dots">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+        </TransitionGroup>
+      </div>
     </div>
+
 
     <div class="input-area">
       <textarea
         v-model="inputMessage"
         rows="2"
         maxlength="700"
-        autofocus
         type="text"
         class="message-input"
-        placeholder="Спроси что-нибудь..."
+        placeholder="Ask something..."
       />
-      <button
-        class="send-button"
+      
+      <Button
+        v-if="!!inputMessage"
+        icon="pi pi-send"
+        severity="help"
+        rounded
+        aria-label="Send button"
         :disabled="isBotTyping || !inputMessage"
-        @click="() => handleSend()">Отправить</button>
+        @click="handleSend"
+      />
+
     </div>
   </div>
 </template>
@@ -117,99 +127,107 @@ const handleSend = async (): Promise<void> => {
 .ai-chat-page {
   display: flex;
   flex-direction: column;
-  flex: 1;
   width: 100%;
-  height: 100%;
 
-  .messages-container {
+  &-wrap {
+    min-height: 0;
     flex: 1;
     overflow-y: auto;
-    padding: $spacer-2 $spacer-3;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
 
-    .message {
+    .messages-container {
+      max-width: 980px;
       display: flex;
-      margin-bottom: 8px;
+      flex-direction: column;
+      padding: $spacer-2;
+      margin: 0 auto;
+      gap: 12px;
 
-      .message-content {
-        padding: 12px 16px;
-        border-radius: 8px;
-        max-width: 70%;
-        word-wrap: break-word;
-        font-size: 16px;
-        font-family: -apple-system,Roboto,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif;
+      .message {
+        display: flex;
+        margin-bottom: $spacer;
+
+        .message-content {
+          padding: 12px 16px;
+          border-radius: 8px;
+          max-width: 70%;
+          word-wrap: break-word;
+          font-size: 16px;
+          line-height: 1.4rem;
+        }
       }
-    }
 
-    .message-bot {
-      justify-content: flex-start;
-    }
-
-    .message-user {
-      justify-content: flex-end;
-    }
-
-    .message-bot .message-content {
-      background-color: #ebeaea;
-      color: #000;
-    }
-
-    .message-user .message-content {
-      background-color: $secondary-color;
-      color: black;
-    }
-
-    .bot-typing {
-      margin-top: $spacer-2;
-      display: flex;
-      align-items: center;
-      color: #807f7f;
-      font-family: -apple-system,Roboto,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif;
-    }
-    .dots span {
-      width: 5px;
-      height: 5px;
-      margin-left: 4px;
-      background: #999;
-      border-radius: 50%;
-      display: inline-block;
-      animation: blink 1.4s infinite both;
-    }
-
-    .dots span:nth-child(2) {
-      animation-delay: 0.2s;
-    }
-
-    .dots span:nth-child(3) {
-      animation-delay: 0.4s;
-    }
-
-    @keyframes blink {
-      0% {
-        opacity: 0.2;
+      .message-bot {
+        justify-content: flex-start;
       }
-      20% {
-        opacity: 1;
+
+      .message-user {
+        justify-content: flex-end;
       }
-      100% {
-        opacity: 0.2;
+
+      .message-bot .message-content {
+        background-color: #ebeaea;
+        color: #000;
+      }
+
+      .message-user .message-content {
+        background-color: $secondary-color-light;
+        color: black;
+      }
+
+      .bot-typing {
+        margin-top: $spacer-2;
+        display: flex;
+        align-items: center;
+        color: #807f7f;
+      }
+      .dots span {
+        width: 5px;
+        height: 5px;
+        margin-left: 4px;
+        background: #999;
+        border-radius: 50%;
+        display: inline-block;
+        animation: blink 1.4s infinite both;
+      }
+
+      .dots span:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+
+      .dots span:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+
+      @keyframes blink {
+        0% {
+          opacity: 0.2;
+        }
+        20% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0.2;
+        }
       }
     }
   }
 
   .input-area {
+    width: 100%;
+    max-width: 980px;
     display: flex;
+    align-items: center;
     gap: 10px;
-    padding: $spacer-2 $spacer-3;
+    padding-top: $spacer;
+    padding-bottom: $spacer-3;
+    padding: $spacer $spacer-2 $spacer-2;
     background-color: #fff;
     flex-shrink: 0;
+    margin: 0 auto;
 
     .message-input {
       flex: 1;
       font-size: 16px;
-      font-family: -apple-system,Roboto,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif;
       color: $primary-text-color;
     }
 
@@ -217,21 +235,13 @@ const handleSend = async (): Promise<void> => {
       border-color: $primary-color;
     }
 
-    .send-button {
-      align-self: center;
-      padding: 8px 12px;
-      background-color: var(--color-primary);
-      font-size: 16px;
-      color: black;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 500;
-      transition: background-color 0.3s;
+    .p-button {
+      background: var(--color-primary-dark);
+      border: none ;
     }
 
-    .send-button:hover {
-      background-color: rgb(154, 132, 228);
+    .p-button:hover {
+      background: var(--color-primary);
     }
   }
 }

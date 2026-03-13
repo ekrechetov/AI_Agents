@@ -37,17 +37,13 @@ const closeTab = (event: MouseEvent): void => {
 </template>
 
 <style scoped lang="scss">
-a {
-  text-decoration: none;
-}
-
 .tab {
   display: flex;
   align-items: center;
-  background: rgb(233, 231, 231);
+  background: rgb(217, 215, 215);
   transition: 0.3s;
   margin-right: calc($spacer / 2);
-  padding: calc($spacer / 3) $spacer;
+  padding: calc($spacer / 2) $spacer;
   border-radius: 5px 12px 0 0;
   border: 1px solid $secondary-color-light;
   border-bottom: none;
@@ -57,16 +53,15 @@ a {
   &-label {
     font-size: 16px;
     color: inherit;
-    font-family: -apple-system,Roboto,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif;
   }
 
   &-close-icon {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-left: 4px;
+    margin-left: 5px;
     cursor: pointer;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     color: rgba(0, 0, 0, 0.5);
     width: 20px;
     height: 20px;

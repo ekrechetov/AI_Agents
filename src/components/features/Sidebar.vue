@@ -47,11 +47,10 @@ const handleSelectAgent = (agent: Agent) => {
 .sidebar {
 	display: flex;
 	flex-direction: column;
-	padding: $spacer-2;
+	top: var(--header-height);
+	width: 0;
   height: 100%;
-  background: rgb(100, 69, 205);
-  width: 70px;
-  margin-top: 56px;
+  background: var(--color-primary-dark);
   overflow-y: auto;
   transition: width 0.2s ease-in-out;
   position: absolute;
@@ -62,11 +61,10 @@ const handleSelectAgent = (agent: Agent) => {
 		display: flex;
 		align-items: center;
 		padding: $spacer;
-		cursor: pointer;
+		cursor: pointer;		
 
 		&-label {
 			color: white;
-			font-family: -apple-system,Roboto,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif;
 			font-size: 14px;
 			font-weight: 500;
 			text-wrap: nowrap;
@@ -75,6 +73,7 @@ const handleSelectAgent = (agent: Agent) => {
 			transition: opacity 0.4s ease;
 			margin-left: $spacer-2;
 			pointer-events: none; /* чтобы не мешал кликам, когда скрыт */
+			overflow: hidden;
 		}
 
 		&-label.expanded {
@@ -98,5 +97,12 @@ const handleSelectAgent = (agent: Agent) => {
 
 .sidebar.sidebar-expanded {
   width: 200px;
+}
+
+@media screen and (min-width: 480px) {
+  .sidebar {
+		padding: $spacer-2;
+		width: var(--sidebar-width);
+  }
 }
 </style>

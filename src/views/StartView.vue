@@ -12,7 +12,6 @@
 
 <style scoped lang="scss">
 .start-view {
-  height: calc(100vh - 102px); // todo: make dynamic based on header and tabbar height
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -25,13 +24,13 @@
     margin-bottom: 1rem;
   }
 
-  h2 {
+  & h2 {
     margin: 0 0 0.5rem 0;
     color: #374151;
-    font-size: 1.5rem;
+    font-size: 1.5rem;      
   }
 
-  p {
+  & p {
     margin: 0;
     font-size: 1rem;
   }

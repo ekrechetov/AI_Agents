@@ -18,7 +18,7 @@ const conversations = computed(() => useConversationStore().conversations)
 .tab-container {
   display: flex;
   align-items: end;
-  min-height: 44px;
-  padding: 12px 12px 0 12px;
+  min-height: 42px;
+  padding: 8px 12px 0 12px;
 }
 </style>

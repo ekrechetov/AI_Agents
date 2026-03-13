@@ -18,6 +18,7 @@ const isLoading = ref<boolean>(false)
 const response = ref<string>('')
 const fileBase64 = ref<string>('')
 const isUploadModalOpen = ref<boolean>(false)
+const errorMessage = ref<string>('')
 
 onMounted(() => {
   if (!conversations.value.some(item => item.agentName === 'Ai PDF extractor')) {
@@ -28,14 +29,21 @@ onMounted(() => {
 const handlePdfFile = async () => {
   closeUploadModal()
   isLoading.value = true
-  const parsedData = await pdfService.sendPdf(fileBase64.value)
-  if (!parsedData) {
-    response.value = 'Не удалось распознать инвойс в документе.'
+  try {
+    const parsedData = await pdfService.sendPdf(fileBase64.value)
+    if (!parsedData) {
+      response.value = 'The invoice in the document could not be recognized.'
+      isLoading.value = false
+      return
+    }
+    addPdfData(parsedData) // json
+
+  } catch (error: any) {
+    console.log('AI service failed', error)
+    errorMessage.value = `AI service error: ${error?.message}`
+  } finally {
     isLoading.value = false
-    return
   }
-  addPdfData(parsedData) // json
-  isLoading.value = false
 }
 
 const convertPdfToBase64 = (file: File): Promise<string | ArrayBuffer | null> => {
@@ -72,8 +80,8 @@ const closeUploadModal = () => {
     <div class="scroll-container">
 
       <label class="upload-file-label" style="display: flex;">
-        <span v-if="!isLoading">Выберите PDF-файл для получения данных:</span>
-        <span v-else>Получение данных из PDF-файла...</span>
+        <span v-if="!isLoading">Select PDF-file:</span>
+        <span v-else>Extracting data from the PDF-file...</span>
         <input
           id="upload-pdf-file-input"
           type="file"
@@ -83,23 +91,26 @@ const closeUploadModal = () => {
           @change="onFilesSelected"
         />
         <div v-if="!isLoading" class="attach-icon" style="cursor: pointer;">
-          <!-- <AttachIcon :iconSize="20" /> -->
           <span class="pi pi-paperclip" style="font-size: 20px;"></span>
         </div>
       </label>
 
-      <div class="message">
+      <div v-if="!errorMessage" class="message">
         <div v-if="isLoading" class="chat-page-loader">
           <ProgressSpinner style="width: 50px; height: 45px" strokeWidth="3" />
         </div>
         <pre v-else-if="pdfData" class="message-content">{{ pdfData }}</pre>
       </div>
+
+      <div v-else class="message-error">
+        {{ errorMessage }}
+      </div>
     </div>
     <FileUploadModal
       v-if="isUploadModalOpen"
-      title="Обработка PDF файла"
-      okButtonText="Отправить"
-      cancelButtonText="Отменить"
+      title="Processing a PDF file"
+      okButtonText="Send"
+      cancelButtonText="Cancel"
       :isLoading="isLoading"
       @run-file-upload="handlePdfFile"
       @close-upload-modal="closeUploadModal"
@@ -125,40 +136,51 @@ const closeUploadModal = () => {
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 100%;
 
   .scroll-container {
     display: flex;
-    // align-items: center;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     flex: 1;
     overflow-y: auto;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+    padding: $spacer-2;    
 
     .attach-icon {
-      margin-left: $spacer;
+      margin-left: $spacer-2;
+    }
+
+    .attach-icon:hover {
+      color: var(--color-primary-dark);
     }
 
     .upload-file-label {
-      font-family: -apple-system,Roboto,BlinkMacSystemFont,Segoe UI,Helvetica,sans-serif;
+      display: flex;
+      align-items: center;
       font-size: 16px;
+      line-height: 34px;
     }
 
     .message {
       display: flex;
-      margin-bottom: 8px;
+      margin-bottom: $spacer;
     }
 
     .message-content {
       padding: 12px 16px;
       border-radius: 8px;
-      background-color: #e0e0e0;
+      background-color: #e9e6e6;
       max-width: 100%; 
       white-space: pre-wrap;       /* Поддерживает переносы и пробелы JSON */
       word-wrap: break-word;       /* Разрывает очень длинные слова/ключи */
       overflow-x: hidden;          /* Убирает горизонтальную прокрутку */
+    }
+
+    .message-error {
+      border: 1px solid  var(--color-error);
+      color:  var(--color-error);
+      padding: $spacer;
+      text-align: center;
     }
   }
 }

@@ -8,7 +8,6 @@
       "@/*": ["./src/*"],
       "@shared/*": ["src/shared-types/*"]
     },
-
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,

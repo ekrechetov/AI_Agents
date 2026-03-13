@@ -13,6 +13,9 @@
   --color-error: #ef4444;
   --color-warning: #f59e0b;
 
+  --header-height: 64px;
+  --sidebar-width: 70px;
+
   font-family: -apple-system, BlinkMacSystemFont, 'Roboto', 'Segoe UI', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
@@ -36,6 +39,8 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden;
+  width: 100%;
+  position: fixed; /* Жестко фиксируем body, чтобы клавиатура mobile его не двигала */
 }
 
 body {
